@@ -444,21 +444,7 @@ if(WITH_GLEW)
 endif()
 
 # Boost (required)
-#include("${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake")
-if(CMAKE_CXX_STANDARD MATCHES "14")
-  # Optional boost modules
-  set(BOOST_OPTIONAL_MODULES serialization mpi)
-  # Required boost modules
-  set(BOOST_REQUIRED_MODULES filesystem iostreams system)
-else()
-  # Optional boost modules
-  set(BOOST_OPTIONAL_MODULES filesystem serialization mpi)
-  # Required boost modules
-  set(BOOST_REQUIRED_MODULES iostreams system)
-endif()
-
-find_package(Boost CONFIG QUIET COMPONENTS ${BOOST_OPTIONAL_MODULES})
-find_package(Boost CONFIG REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES})
+include("${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake")
 
 # System zlib (for nurbs on surface)
 option(WITH_SYSTEM_ZLIB "Use system zlib" TRUE)
