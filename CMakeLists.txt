@@ -469,7 +469,6 @@ if(WITH_SYSTEM_ZLIB)
   endif()
 endif()
 
-install(DIRECTORY "${HUNTER_INSTALL_PREFIX}/" DESTINATION "${CMAKE_INSTALL_PREFIX}/3rdParty")
 
 
 ### ---[ Create the config.h file
