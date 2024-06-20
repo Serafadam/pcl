@@ -4,5 +4,4 @@ hunter_config(
     CMAKE_ARGS 
         IOSTREAMS_NO_BZIP2=1
         BOOST_SYSTEM_NO_DEPRECATED=ON
-        USE_CONFIG_FROM_BOOST=ON
 )
