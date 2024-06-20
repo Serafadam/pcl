@@ -7,7 +7,27 @@ if(POLICY CMP0074)
   cmake_policy(SET CMP0074 NEW)
 endif()
 
+if(POLICY CMP0126)
+  cmake_policy(SET CMP0126 NEW)
+endif()
+
+if(POLICY CMP0028)
+  cmake_policy(SET CMP0028 NEW)
+endif()
+
+if(POLICY CMP0082)
+  cmake_policy(SET CMP0082 NEW)
+endif()
+
+include("cmake/HunterGate.cmake")
+HunterGate(
+    URL "https://github.com/cpp-pm/hunter/archive/v0.25.5.tar.gz"
+    SHA1 "a20151e4c0740ee7d0f9994476856d813cdead29"
+    LOCAL # Local config for dependencies
+)
+
 # Set target C++ standard and required compiler features
+set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 14 CACHE STRING "The target C++ standard. PCL requires C++14 or higher.")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -60,6 +80,9 @@ elseif(MSVC)
 elseif(MINGW)
   set(CMAKE_COMPILER_IS_MINGW 1)
 endif()
+
+hunter_add_package(Boost COMPONENTS system filesystem mpi iostreams serialization)
+hunter_add_package(Eigen)
 
 # https://github.com/fish-shell/fish-shell/issues/5865
 include(CheckCXXSourceCompiles)
@@ -421,7 +444,21 @@ if(WITH_GLEW)
 endif()
 
 # Boost (required)
-include("${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake")
+#include("${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake")
+if(CMAKE_CXX_STANDARD MATCHES "14")
+  # Optional boost modules
+  set(BOOST_OPTIONAL_MODULES serialization mpi)
+  # Required boost modules
+  set(BOOST_REQUIRED_MODULES filesystem iostreams system)
+else()
+  # Optional boost modules
+  set(BOOST_OPTIONAL_MODULES filesystem serialization mpi)
+  # Required boost modules
+  set(BOOST_REQUIRED_MODULES iostreams system)
+endif()
+
+find_package(Boost CONFIG QUIET COMPONENTS ${BOOST_OPTIONAL_MODULES})
+find_package(Boost CONFIG REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES})
 
 # System zlib (for nurbs on surface)
 option(WITH_SYSTEM_ZLIB "Use system zlib" TRUE)
@@ -431,6 +468,9 @@ if(WITH_SYSTEM_ZLIB)
     set(HAVE_ZLIB ON)
   endif()
 endif()
+
+install(DIRECTORY "${HUNTER_INSTALL_PREFIX}/" DESTINATION "${CMAKE_INSTALL_PREFIX}/3rdParty")
+
 
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")
